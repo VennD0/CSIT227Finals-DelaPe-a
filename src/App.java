@@ -1,4 +1,5 @@
 import javax.naming.InvalidNameException;
+import javax.naming.Name;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -36,7 +37,6 @@ public class App extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 boolean flag = true;
-                Person person = null;
                 String name = "";
                 int age = 0;
                 int month = 0;
@@ -96,24 +96,30 @@ public class App extends JFrame {
                         JOptionPane.showMessageDialog(pnlMain, "Input in salary must be all numbers.");
                     }
                     if(flag) {
-                        if (rbManager.isSelected())
+                        if (rbManager.isSelected()) {
                             taPersons.setText(taPersons.getText() + "\n" + index + ". " + rbManager.getText() + " - " + name + "(" + age + ")");
-                        if (rbClerk.isSelected())
-                            taPersons.setText(taPersons.getText() + "\n" + index + ". " + rbCustomer.getText() + " - " + name + "(" + age + ")");
+                        }
+                        if (rbClerk.isSelected()) {
+                            taPersons.setText(taPersons.getText() + "\n" + index + ". " + rbClerk.getText() + " - " + name + "(" + age + ")");
+                        }
                     }
                     }
 
 
                     if (rbClerk.isSelected()) {
-                        person = new Employee.Clerk(name, age, month, salary);
+                        persons.add(new Employee.Clerk(name, age, month, salary));
                     } else if (rbCustomer.isSelected()) {
-                        person = new Customer(name, age);
+                        persons.add(new Person.Customer(name, age));
                     } else if (rbManager.isSelected()) {
-                        person = new Employee.Manager(name, age, month, salary);
+                        persons.add(new Employee.Manager(name, age, month, salary));
                     }
-                    persons.add(person);
+
 
                 index++;
+                tfName.setText("");
+                tfAge.setText("");
+                tfMonths.setText("");
+                tfSalary.setText("");
             }
         });
         btnClear.addActionListener(new ActionListener() {
@@ -123,6 +129,20 @@ public class App extends JFrame {
                 tfAge.setText("");
                 tfMonths.setText("");
                 tfSalary.setText("");
+            }
+        });
+
+        btnLoad.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                load();
+            }
+        });
+
+        btnSayHi.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                sayHi();
             }
         });
     }
@@ -165,6 +185,42 @@ public class App extends JFrame {
 
         return salary;
     }
-}
+    public void load(){
+        int num = 0;
+        try {
+             num = Integer.parseInt(tfLoad.getText());
+        }catch(NumberFormatException s){
+            tfLoad.setText("");
+            JOptionPane.showMessageDialog(pnlMain,"Input in load must be a number.");
+        }
+        int ctr = 1;
+        for(Person p: persons){
+            if(ctr == num) {
+                tfName.setText(p.getName());
+                tfAge.setText(p.getAge());
+                if(p instanceof Employee.Clerk){
+                    rbClerk.setSelected(true);
+                    tfMonths.setText(Employee.Clerk.getMonth());
+                    tfSalary.setText(String.valueOf(Employee.Clerk.getSalary()));
+                }else if(p instanceof Employee.Manager) {
+                    rbManager.setSelected(true);
+                    tfMonths.setText(Employee.Manager.getMonth());
+                    tfSalary.setText(String.valueOf(Employee.Manager.getSalary()));
+                }else {
+                    rbCustomer.setSelected(true);
+                }
+                }
+            }
+            ctr++;
+        }
+    public void sayHi(){
+        for(Person p: persons){
+            taPersons.setText(taPersons.getText() + "\n"+ p.to_String());
+        }
+    }
+    }
+
+
+
 
 
