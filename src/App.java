@@ -1,3 +1,4 @@
+import javax.naming.InvalidNameException;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -22,21 +23,96 @@ public class App extends JFrame {
     private JButton btnSavePerson;
     private JButton btnLoadPerson;
     private JButton btnReward;
-
     private List<Person> persons;
-    private List<JRadioButton> bgPersons;
+
     public int index = 1;
     public App() {
         persons = new ArrayList<>();
-        bgPersons = new ArrayList<>();
+        ButtonGroup bgPersons = new ButtonGroup();
         bgPersons.add(rbCustomer);
         bgPersons.add(rbClerk);
         bgPersons.add(rbManager);
-
         btnSave.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                save();
+                boolean flag = true;
+                Person person = null;
+                String name = "";
+                int age = 0;
+                int month = 0;
+                double salary = 0;
+
+                try {
+                    name = getName();
+                    if(name == "") {
+                        throw new InvalidNameException("Input in name cannot empty.");
+                    }
+                }catch(InvalidNameException s){
+                    flag = false;
+                    tfName.setText("");
+                    JOptionPane.showMessageDialog(pnlMain, s.getMessage());
+                }
+
+                try{
+                    age = getAge();
+                    if(age < 0){
+                        throw new InvalidAgeException("Age cannot be negative.");
+                    }
+                }catch(NumberFormatException s){
+                    flag = false;
+                    tfAge.setText("");
+                    JOptionPane.showMessageDialog(pnlMain, "Input in age must be all numbers.");
+                }catch (InvalidAgeException s){
+                    flag = false;
+                    tfAge.setText("");
+                    JOptionPane.showMessageDialog(pnlMain, s.getMessage());
+                }
+
+                if (rbCustomer.isSelected() && flag) {
+                    taPersons.setText(taPersons.getText() + "\n" + index + ". " + rbCustomer.getText() + " - " + name + "(" + age + ")");
+
+                    }else if(rbManager.isSelected() || rbClerk.isSelected()){
+
+                    try{
+                        month = getMonth();
+                        if(month <= 0){
+                            throw new InvalidMonthException("Month cannot be less than one.");
+                        }
+                    }catch(NumberFormatException s){
+                        flag = false;
+                        tfMonths.setText("");
+                        JOptionPane.showMessageDialog(pnlMain, "Input in months worked must be all numbers.");
+                    }catch(InvalidMonthException s){
+                        flag = false;
+                        tfMonths.setText("");
+                        JOptionPane.showMessageDialog(pnlMain, s.getMessage());
+                    }
+
+                    try{
+                        salary = getSalary();
+                    }catch(NumberFormatException s){
+                        flag = false;
+                        tfSalary.setText("");
+                        JOptionPane.showMessageDialog(pnlMain, "Input in salary must be all numbers.");
+                    }
+                    if(flag) {
+                        if (rbManager.isSelected())
+                            taPersons.setText(taPersons.getText() + "\n" + index + ". " + rbManager.getText() + " - " + name + "(" + age + ")");
+                        if (rbClerk.isSelected())
+                            taPersons.setText(taPersons.getText() + "\n" + index + ". " + rbCustomer.getText() + " - " + name + "(" + age + ")");
+                    }
+                    }
+
+
+                    if (rbClerk.isSelected()) {
+                        person = new Employee.Clerk(name, age, month, salary);
+                    } else if (rbCustomer.isSelected()) {
+                        person = new Customer(name, age);
+                    } else if (rbManager.isSelected()) {
+                        person = new Employee.Manager(name, age, month, salary);
+                    }
+                    persons.add(person);
+
                 index++;
             }
         });
@@ -48,32 +124,38 @@ public class App extends JFrame {
         app.setSize(500,500);
         app.setDefaultCloseOperation(EXIT_ON_CLOSE);
         app.setVisible(true);
-        // add here how to make GUI visible
     }
 
     static void giveReward(int n) {
 
     }
 
-    public void save(){
-        Person person = null;
-        for(JRadioButton rb: bgPersons){
-            if(rb.isSelected()){
-                taPersons.setText(taPersons.getText()+"\n"+index+". "+rb.getText() + " - " + tfName.getText() +"("+tfAge.getText()+")");
-            }
-            if(rb == rbClerk){
-                person = new Employee.Clerk(tfName.getText(), Integer.parseInt(tfAge.getText()), Integer.parseInt(tfMonths.getText()), Integer.parseInt(tfSalary.getText()));
-            }else if(rb == rbCustomer){
-                person = new Customer(tfName.getText(), Integer.parseInt(tfAge.getText()));
-            }else if(rb == rbManager){
-                person = new Employee.Manager(tfName.getText(), Integer.parseInt(tfAge.getText()), Integer.parseInt(tfMonths.getText()), Integer.parseInt(tfSalary.getText()));
-            }
-            persons.add(person);
-        }
-        tfName.setText("");
-        tfAge.setText("");
-        tfMonths.setText("");
-        tfSalary.setText("");
+    public String getName(){
+        String name = "";
+        name = tfName.getText();
+        return name;
     }
 
+    public int getAge(){
+        int age = 0;
+        age = Integer.parseInt(tfAge.getText());
+
+        return age;
+    }
+
+    public int getMonth(){
+        int month = 0;
+        month = Integer.parseInt(tfMonths.getText());
+
+        return month;
+    }
+
+    public double getSalary(){
+        double salary = 0;
+        salary = Integer.parseInt(tfSalary.getText());
+
+        return salary;
+    }
 }
+
+
