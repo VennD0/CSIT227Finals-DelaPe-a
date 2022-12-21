@@ -28,7 +28,7 @@ public class App extends JFrame {
     private JButton btnSavePerson;
     private JButton btnLoadPerson;
     private JButton btnReward;
-    private List<Person> persons;
+    private static List<Person> persons;
     ButtonGroup bgPersons;
     public int index = 1;
     public App() {
@@ -49,7 +49,7 @@ public class App extends JFrame {
                 try {
                     name = getName();
                     if(name == "") {
-                        throw new InvalidNameException("Input in name cannot empty.");
+                        throw new InvalidNameException("Input in name cannot be empty.");
                     }
                 }catch(InvalidNameException s){
                     flag = false;
@@ -160,6 +160,14 @@ public class App extends JFrame {
                     tfMonths.setEditable(!rbCustomer.isSelected());
             }
         });
+
+        btnReward.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int n = Integer.parseInt(tfLoad.getText());
+                giveReward(n);
+            }
+        });
     }
 
     public static void main(String[] args) {
@@ -171,7 +179,17 @@ public class App extends JFrame {
     }
 
     static void giveReward(int n) {
-
+        Person person = App.persons.get(n-1);
+        try {
+            if (person instanceof Employee) {
+                Employee employee = (Employee) person;
+                JOptionPane.showMessageDialog(null, String.format("%s is receives %.2f as a 13th-month pay.", employee.getName(), employee.thirteenthmonth()));
+            }else{
+                throw new InvalidEmployeeException("Not an Employee.Try again.");
+            }
+        }catch(InvalidEmployeeException e){
+            JOptionPane.showMessageDialog(null,e.getMessage());
+        }
     }
     public String getName(){
         String name = "";
