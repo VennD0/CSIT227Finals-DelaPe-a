@@ -116,6 +116,15 @@ public class App extends JFrame {
                 index++;
             }
         });
+        btnClear.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                tfName.setText("");
+                tfAge.setText("");
+                tfMonths.setText("");
+                tfSalary.setText("");
+            }
+        });
     }
 
     public static void main(String[] args) {
