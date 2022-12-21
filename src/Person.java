@@ -21,4 +21,11 @@ public abstract class Person {
         }
         return "Hello, my name is " + name;
     }
+
+    public static class Customer extends Person{
+        public Customer(String name, int age) {
+            super(name, age);
+        }
+    }
+
 }
