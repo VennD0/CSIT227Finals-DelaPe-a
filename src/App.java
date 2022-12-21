@@ -7,8 +7,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class App extends JFrame {
     private JPanel pnlMain;
@@ -59,8 +61,8 @@ public class App extends JFrame {
 
                 try{
                     age = getAge();
-                    if(age < 0){
-                        throw new InvalidAgeException("Age cannot be negative.");
+                    if(age <= 0){
+                        throw new InvalidAgeException("Age cannot be zero or negative.");
                     }
                 }catch(NumberFormatException s){
                     flag = false;
@@ -74,12 +76,15 @@ public class App extends JFrame {
 
                 if (rbCustomer.isSelected() && flag) {
                     taPersons.setText(taPersons.getText() + "\n" + index + ". " + rbCustomer.getText() + " - " + name + "(" + age + ")");
+                        tfName.setText("");
+                        tfAge.setText("");
 
                     }else if(rbManager.isSelected() || rbClerk.isSelected()){
 
                     try{
                         month = getMonth();
                         if(month <= 0){
+                            flag = false;
                             throw new InvalidMonthException("Month cannot be less than one.");
                         }
                     }catch(NumberFormatException s){
@@ -102,10 +107,18 @@ public class App extends JFrame {
                     if(flag) {
                         if (rbManager.isSelected()) {
                             taPersons.setText(taPersons.getText() + "\n" + index + ". " + rbManager.getText() + " - " + name + "(" + age + ")");
+                            tfName.setText("");
+                            tfAge.setText("");
+                            tfMonths.setText("");
+                            tfSalary.setText("");
                             index++;
                         }
                         if (rbClerk.isSelected()) {
                             taPersons.setText(taPersons.getText() + "\n" + index + ". " + rbClerk.getText() + " - " + name + "(" + age + ")");
+                            tfName.setText("");
+                            tfAge.setText("");
+                            tfMonths.setText("");
+                            tfSalary.setText("");
                             index++;
                         }
                     }
@@ -117,10 +130,12 @@ public class App extends JFrame {
                     } else if (rbManager.isSelected()) {
                         persons.add(new Employee.Manager(name, age, month, salary));
                     }
-                tfName.setText("");
-                tfAge.setText("");
-                tfMonths.setText("");
-                tfSalary.setText("");
+
+                try (BufferedWriter bw = new BufferedWriter(new FileWriter("C:\\Users\\Venn Dominic\\IdeaProjects\\CSIT227Finals-DelaPe-a\\src\\ListOfPersons", false))) {
+                    bw.write(taPersons.getText());
+                    } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
 
             }
         });
@@ -137,12 +152,7 @@ public class App extends JFrame {
         btnLoad.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                try {
                     load();
-                }catch(IndexOutOfBoundsException s){
-                    JOptionPane.showMessageDialog(pnlMain,"Number exceeded the list.Try again.");
-                    tfLoad.setText("");
-                }
             }
         });
 
@@ -176,6 +186,8 @@ public class App extends JFrame {
         app.setSize(500,500);
         app.setDefaultCloseOperation(EXIT_ON_CLOSE);
         app.setVisible(true);
+
+        Scanner scan = new Scanner(System.in);
     }
 
     static void giveReward(int n) {
@@ -183,7 +195,7 @@ public class App extends JFrame {
         try {
             if (person instanceof Employee) {
                 Employee employee = (Employee) person;
-                JOptionPane.showMessageDialog(null, String.format("%s is receives %.2f as a 13th-month pay.", employee.getName(), employee.thirteenthmonth()));
+                JOptionPane.showMessageDialog(null, String.format("%s receives %.2f as a 13th-month pay.", employee.getName(), employee.thirteenthmonth()));
             }else{
                 throw new InvalidEmployeeException("Not an Employee.Try again.");
             }
@@ -219,13 +231,19 @@ public class App extends JFrame {
     }
     public void load(){
         int num = 0;
+        Person person  = null;
         try {
              num = Integer.parseInt(tfLoad.getText());
+            person = persons.get(num-1);
         }catch(NumberFormatException s){
             tfLoad.setText("");
             JOptionPane.showMessageDialog(pnlMain,"Input in load must be a number.");
+        }catch(IndexOutOfBoundsException s){
+            JOptionPane.showMessageDialog(pnlMain,"Load input exceeded the list. Try again.");
+        }catch(NullPointerException s){
+            JOptionPane.showMessageDialog(pnlMain,"Load input exceeded the list. Try again.");
         }
-        Person person = persons.get(num-1);
+
         tfName.setText(person.getName());
         tfAge.setText(person.getAge());
         if(person instanceof Employee.Clerk){
