@@ -25,6 +25,10 @@ public class App extends JFrame {
 
     public App() {
         persons = new ArrayList<>();
+        ButtonGroup rb = new ButtonGroup();
+        rb.add(rbCustomer);
+        rb.add(rbClerk);
+        rb.add(rbManager);
         // TODO add implementations for all milestones here
     }
 
