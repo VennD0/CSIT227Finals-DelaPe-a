@@ -1,8 +1,12 @@
 import javax.naming.InvalidNameException;
 import javax.naming.Name;
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -98,14 +102,14 @@ public class App extends JFrame {
                     if(flag) {
                         if (rbManager.isSelected()) {
                             taPersons.setText(taPersons.getText() + "\n" + index + ". " + rbManager.getText() + " - " + name + "(" + age + ")");
+                            index++;
                         }
                         if (rbClerk.isSelected()) {
                             taPersons.setText(taPersons.getText() + "\n" + index + ". " + rbClerk.getText() + " - " + name + "(" + age + ")");
+                            index++;
                         }
                     }
                     }
-
-
                     if (rbClerk.isSelected()) {
                         persons.add(new Employee.Clerk(name, age, month, salary));
                     } else if (rbCustomer.isSelected()) {
@@ -113,13 +117,11 @@ public class App extends JFrame {
                     } else if (rbManager.isSelected()) {
                         persons.add(new Employee.Manager(name, age, month, salary));
                     }
-
-
-                index++;
                 tfName.setText("");
                 tfAge.setText("");
                 tfMonths.setText("");
                 tfSalary.setText("");
+
             }
         });
         btnClear.addActionListener(new ActionListener() {
@@ -145,6 +147,16 @@ public class App extends JFrame {
                 sayHi();
             }
         });
+
+        rbCustomer.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                if(rbCustomer.isSelected()){
+                    tfSalary.setEditable(false);
+                    tfMonths.setEditable(false);
+                }
+            }
+        });
     }
 
     public static void main(String[] args) {
@@ -158,7 +170,6 @@ public class App extends JFrame {
     static void giveReward(int n) {
 
     }
-
     public String getName(){
         String name = "";
         name = tfName.getText();
@@ -193,25 +204,18 @@ public class App extends JFrame {
             tfLoad.setText("");
             JOptionPane.showMessageDialog(pnlMain,"Input in load must be a number.");
         }
-        int ctr = 1;
-        for(Person p: persons){
-            if(ctr == num) {
-                tfName.setText(p.getName());
-                tfAge.setText(p.getAge());
-                if(p instanceof Employee.Clerk){
-                    rbClerk.setSelected(true);
-                    tfMonths.setText(Employee.Clerk.getMonth());
-                    tfSalary.setText(String.valueOf(Employee.Clerk.getSalary()));
-                }else if(p instanceof Employee.Manager) {
-                    rbManager.setSelected(true);
-                    tfMonths.setText(Employee.Manager.getMonth());
-                    tfSalary.setText(String.valueOf(Employee.Manager.getSalary()));
-                }else {
-                    rbCustomer.setSelected(true);
-                }
-                }
-            }
-            ctr++;
+        Person person = persons.get(num-1);
+        tfName.setText(person.getName());
+        tfAge.setText(person.getAge());
+        if(person instanceof Employee.Clerk){
+            rbClerk.setSelected(true);
+            tfMonths.setText(Employee.Clerk.getMonth());
+            tfSalary.setText(String.valueOf(Employee.Clerk.getSalary()));
+        }else if(person instanceof Employee.Manager) {
+            rbManager.setSelected(true);
+            tfMonths.setText(Employee.Manager.getMonth());
+            tfSalary.setText(String.valueOf(Employee.Manager.getSalary()));
+        }
         }
     public void sayHi(){
         for(Person p: persons){
