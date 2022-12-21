@@ -1,4 +1,4 @@
-public abstract class Person {
+public class Person {
     // TODO implement Person and its subclasses in other Java files
     private String name;
     private int age;
@@ -22,11 +22,10 @@ public abstract class Person {
         return "Hello, my name is " + getName() +".";
     }
 
-
-
     public static class Customer extends Person{
         public Customer(String name, int age) {
             super(name, age);
         }
     }
+
 }

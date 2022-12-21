@@ -29,11 +29,11 @@ public class App extends JFrame {
     private JButton btnLoadPerson;
     private JButton btnReward;
     private List<Person> persons;
-
+    ButtonGroup bgPersons;
     public int index = 1;
     public App() {
         persons = new ArrayList<>();
-        ButtonGroup bgPersons = new ButtonGroup();
+        bgPersons = new ButtonGroup();
         bgPersons.add(rbCustomer);
         bgPersons.add(rbClerk);
         bgPersons.add(rbManager);
@@ -137,7 +137,12 @@ public class App extends JFrame {
         btnLoad.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                load();
+                try {
+                    load();
+                }catch(IndexOutOfBoundsException s){
+                    JOptionPane.showMessageDialog(pnlMain,"Number exceeded the list.Try again.");
+                    tfLoad.setText("");
+                }
             }
         });
 
@@ -151,10 +156,8 @@ public class App extends JFrame {
         rbCustomer.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
-                if(rbCustomer.isSelected()){
-                    tfSalary.setEditable(false);
-                    tfMonths.setEditable(false);
-                }
+                    tfSalary.setEditable(!rbCustomer.isSelected());
+                    tfMonths.setEditable(!rbCustomer.isSelected());
             }
         });
     }
@@ -208,13 +211,19 @@ public class App extends JFrame {
         tfName.setText(person.getName());
         tfAge.setText(person.getAge());
         if(person instanceof Employee.Clerk){
+            Employee.Clerk clerk = (Employee.Clerk) person;
             rbClerk.setSelected(true);
-            tfMonths.setText(Employee.Clerk.getMonth());
-            tfSalary.setText(String.valueOf(Employee.Clerk.getSalary()));
+            tfMonths.setText(String.valueOf(clerk.getMonth()));
+            tfSalary.setText(String.valueOf(clerk.getSalary()));
         }else if(person instanceof Employee.Manager) {
+            Employee.Manager manager = (Employee.Manager) person;
             rbManager.setSelected(true);
-            tfMonths.setText(Employee.Manager.getMonth());
-            tfSalary.setText(String.valueOf(Employee.Manager.getSalary()));
+            tfMonths.setText(String.valueOf(manager.getMonth()));
+            tfSalary.setText(String.valueOf(manager.getSalary()));
+        }else{
+            rbCustomer.setSelected(true);
+            tfMonths.setText("");
+            tfSalary.setText("");
         }
         }
     public void sayHi(){

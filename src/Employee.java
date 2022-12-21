@@ -1,6 +1,7 @@
+
 public class Employee extends Person {
-    private static int months_worked;
-    private static double salary;
+    private int months_worked;
+    private double salary;
 
     public Employee(String name, int age) {
         super(name, age);
@@ -8,16 +9,16 @@ public class Employee extends Person {
 
     public Employee(String name, int age, int months_worked, double salary) {
         super(name,age);
-        Employee.months_worked = months_worked;
-        Employee.salary = salary;
+        this.months_worked = months_worked;
+        this.salary = salary;
     }
 
-    public static String getMonth(){
+    public int getMonth(){
 
-        return String.valueOf(months_worked);
+        return months_worked;
     }
 
-    public static double getSalary(){
+    public double getSalary(){
         return salary;
     }
     public double thirteenthmonth(){
@@ -25,7 +26,7 @@ public class Employee extends Person {
     }
 
 
-    public static class Clerk extends Employee{
+    public static class Clerk extends Employee {
         public Clerk(String name, int age, int months_worked, double salary) {
             super(name, age, months_worked, salary);
         }
