@@ -130,13 +130,6 @@ public class App extends JFrame {
                     } else if (rbManager.isSelected()) {
                         persons.add(new Employee.Manager(name, age, month, salary));
                     }
-
-                try (BufferedWriter bw = new BufferedWriter(new FileWriter("C:\\Users\\Venn Dominic\\IdeaProjects\\CSIT227Finals-DelaPe-a\\src\\ListOfPersons", false))) {
-                    bw.write(taPersons.getText());
-                    } catch (IOException ex) {
-                    throw new RuntimeException(ex);
-                }
-
             }
         });
         btnClear.addActionListener(new ActionListener() {
@@ -176,6 +169,31 @@ public class App extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 int n = Integer.parseInt(tfLoad.getText());
                 giveReward(n);
+            }
+        });
+
+        btnSavePerson.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try (BufferedWriter bw = new BufferedWriter(new FileWriter("C:\\Users\\Venn Dominic\\IdeaProjects\\CSIT227Finals-DelaPe-a\\src\\ListOfPersons", false))) {
+                    bw.write(taPersons.getText());
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
+
+        btnLoadPerson.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try (BufferedReader br = new BufferedReader(new FileReader("C:\\Users\\Venn Dominic\\IdeaProjects\\CSIT227Finals-DelaPe-a\\src\\ListOfPersons"))) {
+                    String str;
+                    while ((str = br.readLine()) != null) {
+                        taPersons.setText(taPersons.getText() +"\n"+ str);
+                    }
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
     }
